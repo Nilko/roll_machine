@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+
+
+<head>
+
+	<meta charset="UTF-8">
+
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+	<meta name="viewport" content="width=device-width,initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no">
+	<meta http-equiv="Expires" content="Mon, 26 Jul 1997 05:00:00 GMT">
+	<meta http-equiv="Pragma" content="no-cache">
+
+	<title>Lucky Number</title>	
+	
+</head>    
+<body>	
+<div class="wrapper">	
+	<header>
+		<div class="logo"><img src="img/Roll Machine.svg" alt=""></div>
+		<div style="border-bottom: unset" class="rules"><a style="border-bottom: 1px dashed #fff; margin-right: 15px" href="#contact">contact us</a><a style="margin-right: 15px; border-bottom: 1px dashed #fff" href="#about">about game</a><a style="border-bottom: 1px dashed #fff" href="#rules">rules</a></div>
+	</header>
+	<div class="content">		
+		<div class="row">			
+			<div class="column column_bet">	
+					<div class="h1">
+						<img class="coin_gif" src="img/roll.gif" alt=""><h1>Guess the result</h1><br>
+						<span>No house fees and we give 101%, if you win in «Easy money» mode</span>	<br>
+						<button class="easy">Easy money</button> <button class="hard active_lvl">Normal mode</button>		
+					</div>								
+					<div class="coins">					
+						<h2>Place your bet</h2>		
+						<input type="range" min="1" max="100" step="1" class="range">
+						<span class="chance"></span>
+					</div>			
+					<div class="wrapper_fix">	
+						<div class="bets_block">
+							<h2>Your bet</h2>
+							<button data-bet="4" class="bet active_bet" value="0">0</button>
+							<button data-bet="1" class="bet" value="0.001">0.001</button>
+							<button data-bet="2" class="bet" value="0.0025">0.0025</button>
+							<button data-bet="3" class="bet" value="0.005">0.005</button>			
+						</div>					
+						<div class="bet_block">
+						<h2>You can win</h2>
+						<h1></h1>						
+							<button class="go">Get money</button>				
+						</div>				
+					</div>				
+			</div>						
+			<div class="column column_history">
+				<h1>History</h1>
+				<div class="standart_response_history">					
+					You have never played		
+				</div>
+				<ul>
+					<li><span>Bet</span><span>Odds</span><span>Result</span></li>					
+				</ul>
+			</div>
+
+			<div class="column column_result">				
+				<div class="result">										
+					<div class="standart_response">
+						<!-- Play, would be great!											 -->
+					</div>
+					<div class="other_response">						
+					</div>
+					<div class="win_response">						
+						<h2>You win! :)</h2>						
+					</div>			
+					<div class="lose_response">
+						<h2>You lose! :(</h2>						
+					</div>								
+				</div>
+			</div>
+		</div>		
+	</div>
+	<div class="noExtension" style="display: none"> 
+			NOTE: Please install <a style="color: red" target="_blank" href="https://github.com/ChengOrangeJu/WebExtensionWallet">WebExtensionWallet</a>  to play the Lucky Coin
+		</div>
+		<div class="errNetwork" style="display: none">
+			NOTE: Sorry, you use incorrect net
+		</div>
+	<div id="rules" class="mfp-fade mfp-hide">
+		<h1>The rules</h1>	
+		<p>We took no house fee.<br>
+		In the mode of the game "Easy money" you will get a 101% of win. In this mode, one player can play no more than 5 games a day. <br>
+		In the "Normal mode" game mode, you will receive 100% of the amount of the winnings and the real excitement comes into play! 
+		Good luck!</p>	
+	</div>
+	<div id="contact" class="mfp-fade mfp-hide">
+		<h1>Contact us</h1>	
+		<p><a href="mailto:arturnebeload@gmail.com">arturnebeload@gmail.com</a></p>	
+	</div>
+	<div id="about" class="mfp-fade mfp-hide"> 
+		<h1>About the game</h1>	
+		<p>Welcome to the Roll Machine! Our aim is to make your stay as entertaining and as pleasurable possible. A place where you can forget day-to-day stresses and relax within the idyllic atmosphere of our blockchain game.</p>	
+	</div>
+
+	<a href="#transaction" class="transaction" style="position: absolute; width: 0.1px; opacity: .1"></a>
+	<div id="transaction" class="mfp-hide mfp-fade">
+		<p>Transaction is pending</p>
+		<img src="img/pending.gif" alt="">
+		<div class="hash"></div>	
+	</div>
+</div>
+	<script src='lib/jquery-3.3.1.min.js'></script>
+    <script src='lib/nebPay.js'></script>    
+    <script src='lib/jquery.magnific-popup.min.js'></script>    
+	<link rel="stylesheet" href="lib/magnific-popup.css">
+	<link rel="stylesheet" href="lib/main.css">    
+    <link href="https://fonts.googleapis.com/css?family=VT323" rel="stylesheet">
+
+    <script>
+		window.onload = function(){		
+
+			var chance ='roll under or equal: ' + $('.range').val();
+	 		$('.chance').text(chance);
+
+			if(typeof(webExtensionWallet) === "undefined"){	    
+		        $(".noExtension").show();	  
+		        $(".content").hide();
+		    }else{}		    		  			  	 			
+	 		// $('.column_history ul').hide();
+	 		var bones = $('.coins img').toArray();
+	 		var i = 0;
+	 		$.each(bones,function(index,value){													
+	 			if($(bones[index]).hasClass('grayscale')){	 				
+	 				i++;
+	 			}
+			})
+
+	 		var choosen = $('.range').val();
+	 		console.log('choosen ' + choosen);
+	 		var total = 100;
+			var toPayMultiplicator = (total/choosen);			
+			console.log('multi ' + toPayMultiplicator);
+			var bet_val = $('.active_bet').val();		
+			console.log('bet ' + bet_val);	
+			if($('.hard').hasClass('active_lvl')) {
+				// $('.bet_block h1').html((((bet_val*toPayMultiplicator)/100)*99).toFixed(4) + ' NAS');				
+				var can_win = bet_val * toPayMultiplicator;
+				console.log(can_win);
+				$('.bet_block h1').html((can_win) + ' NAS');
+			} else {
+				// $('.bet_block h1').html((((bet_val*toPayMultiplicator)/100)*101).toFixed(4) + ' NAS');				
+				var can_win = (bet_val * toPayMultiplicator) + (bet_val * toPayMultiplicator)*0.01;
+				$('.bet_block h1').html(can_win + ' NAS');
+			}
+	 	};	 		 	
+
+	 	// var toPayMultiplicator = total.div(ru);
+           
+           // var toPay = bet * toPayMultiplicator;
+           // toPay = new BigNumber( Math.round(toPay));
+           // toPay = toPay.sub(bet);
+
+
+        $('.transaction').magnificPopup({
+		    type:'inline',
+		    fixedContentPos: true, 
+		    mainClass: 'mfp-fade',      
+		    showCloseBtn: true,
+		    closeOnBgClick: false
+		  });  
+
+	 	$('.range').change(function(){
+	 		var chance = 'roll under or equal: ' +  $('.range').val();
+	 		$('.chance').text(chance);
+
+	 		var choosen = $('.range').val();
+	 		console.log('choosen ' + choosen);
+	 		var total = 100;
+			var toPayMultiplicator = (total/choosen);			
+			console.log('multi ' + toPayMultiplicator);
+			var bet_val = $('.active_bet').val();		
+			console.log('bet ' + bet_val);	
+			if($('.hard').hasClass('active_lvl')) {
+				// $('.bet_block h1').html((((bet_val*toPayMultiplicator)/100)*99).toFixed(4) + ' NAS');				
+				var can_win = bet_val * toPayMultiplicator;
+				console.log(can_win);
+				$('.bet_block h1').html((can_win) + ' NAS');
+			} else {
+				// $('.bet_block h1').html((((bet_val*toPayMultiplicator)/100)*101).toFixed(4) + ' NAS');				
+				var can_win = (bet_val * toPayMultiplicator) + (bet_val * toPayMultiplicator)*0.01;
+				$('.bet_block h1').html(can_win + ' NAS');
+			}
+	 	}) 		 	
+
+	 	var bet_val_load = ($('.active_bet').val());
+		$('.value').val(bet_val_load);		
+		// $('.standart_response').hide();
+ 		$('.standart_response_history').hide();
+ 		$('.win_response').hide();
+ 		$('.lose_response').hide();
+
+	    var NebPay = require("nebpay");   
+	    var nebPay = new NebPay();
+		var dappAddress = "n1wg9FdYBnMPk1uWdkVXxzMGGASuWzAT2tF";
+
+		$(document).ready(function(){				  
+	        var to = dappAddress;
+	        var value = "0";
+	        var callFunction = "read";
+	        var callArgs = ""; 
+	        nebPay.simulateCall(to, value, callFunction, callArgs, { 
+	            listener: cbSearch
+	        });
+	    })
+
+		function cbSearch(resp) {
+			var result = resp.result;			
+			console.log("return of rpc call: " + JSON.stringify(result));			
+			if (result === ''){	            
+				$(".errNetwork").show();	  
+	        	$(".content").hide();
+			}else{	            
+            try{
+                result = JSON.parse(result);                
+    		} catch (err){	                
+            	}
+
+	            if (!!result[0].bet){     
+	            console.log(result);	            		                     
+	            $('.column_history ul').html('');
+					$.each(result,function(index,value){							
+						if(result[index].result == '0'){
+							$('.column_history ul').append('<li><span class="history_bet">' + (result[index].bet/1000000000000000000) + '</span><span>' + Math.round((result[index].odds)) + '%</span><span class="history_lose">fail</span></li>');
+						} else {
+							$('.column_history ul').append('<li><span class="history_bet">' + (result[index].bet/1000000000000000000) + '</span><span>' + Math.round((result[index].odds)) + '%</span><span class="history_win">' + (result[index].result/1000000000000000000) + '</span></li>');	
+						}
+
+					}); } 
+					else {
+						$('.standart_response_history').show();
+						$('ul').hide();
+					}
+
+					var length = result.length; 
+		    		var last_index = (length - 1);
+		    		var time_last = result[last_index].time;
+		    		var ntimeStamp = Math.floor(Date.now() / 1000);
+		    		var time_minus = (ntimeStamp - time_last);			    		
+		    		var sides_name = ['one','two','three','four','five','six'];		
+		    		var index_for_img = result[last_index].side;
+		    		console.log(sides_name[(index_for_img-1)]);
+		    		if(time_minus>60) {
+		    			$('.win_response').hide();
+ 						$('.lose_response').hide();
+ 						$('.standart_response').show();
+		    		} 
+		    		if (result[last_index].result !== '0' && time_minus<60){
+			    			$('.win_response').show();
+			    			$('.lose_response').hide();
+			    			$('.standart_response').hide();			    			
+			    			$('.win_response img').attr('src', 'img/' + sides_name[(index_for_img-1)] +'.png');
+			    	} 
+			    	
+			    	if (result[last_index].result == '0' && time_minus<60){
+			    			$('.lose_response').show();
+			    			$('.standart_response').hide();
+			    			$('.win_response').hide();
+			    			$('.lose_response img').attr('src', 'img/' + sides_name[(index_for_img-1)] +'.png');
+			    	}
+		    				    		
+	        	}
+			}
+
+
+
+	 	$('.rules a').magnificPopup({
+			type:'inline',
+			fixedContentPos: true, 
+			mainClass: 'mfp-fade',      
+			showCloseBtn: true,
+			closeOnBgClick: true
+		});							
+
+
+	 	$('.bet').click(function(){
+	 		if ($(this).hasClass('active_bet')){
+ 			} else {
+	 			$('.bet').removeClass('active_bet');
+	 			$(this).addClass('active_bet');	 			
+	 			var bet_val = ($(this).val());
+	 			$('.value').val(bet_val);
+ 			}	
+ 		// 	var bones = $('.coins img').toArray();
+	 	// 	var i = 0;
+	 	// 	$.each(bones,function(index,value){													
+	 	// 		if($(bones[index]).hasClass('grayscale')){	 				
+	 	// 			i++;
+	 	// 		}
+			// })
+
+	 		var choosen = $('.range').val();
+	 		console.log('choosen ' + choosen);
+	 		var total = 100;
+			var toPayMultiplicator = (total/choosen);			
+			console.log('multi ' + toPayMultiplicator);
+			var bet_val = $('.active_bet').val();		
+			console.log('bet ' + bet_val);	
+			if($('.hard').hasClass('active_lvl')) {
+				// $('.bet_block h1').html((((bet_val*toPayMultiplicator)/100)*99).toFixed(4) + ' NAS');				
+				var can_win = bet_val * toPayMultiplicator;
+				console.log(can_win);
+				$('.bet_block h1').html((can_win) + ' NAS');
+			} else {
+				// $('.bet_block h1').html((((bet_val*toPayMultiplicator)/100)*101).toFixed(4) + ' NAS');				
+				var can_win = (bet_val * toPayMultiplicator) + (bet_val * toPayMultiplicator)*0.01;
+				$('.bet_block h1').html(can_win + ' NAS');
+			}
+	 	})
+
+	 	$('.coins img').click(function(){		 		 			
+
+	 		if ($(this).hasClass('grayscale')){
+	 			$(this).removeClass('grayscale')
+ 			} else { 
+ 				$(this).addClass('grayscale');
+ 			}
+
+ 			var bones = $('.coins img').toArray();
+	 		var i = 0;
+	 		$.each(bones,function(index,value){													
+	 			if($(bones[index]).hasClass('grayscale')){	 				
+	 				i++;
+	 			}
+			})	 	
+
+	 		var choosen = $('.range').val();
+	 		console.log('choosen ' + choosen);
+	 		var total = 100;
+			var toPayMultiplicator = (total/choosen);			
+			console.log('multi ' + toPayMultiplicator);
+			var bet_val = $('.active_bet').val();		
+			console.log('bet ' + bet_val);	
+			if($('.hard').hasClass('active_lvl')) {
+				// $('.bet_block h1').html((((bet_val*toPayMultiplicator)/100)*99).toFixed(4) + ' NAS');				
+				var can_win = bet_val * toPayMultiplicator;
+				console.log(can_win);
+				$('.bet_block h1').html((can_win) + ' NAS');
+			} else {
+				// $('.bet_block h1').html((((bet_val*toPayMultiplicator)/100)*101).toFixed(4) + ' NAS');				
+				var can_win = (bet_val * toPayMultiplicator) + (bet_val * toPayMultiplicator)*0.01;
+				$('.bet_block h1').html(can_win + ' NAS');
+			}
+	 	})
+
+	 	$('.h1 button').click(function(){
+
+	 		if ($(this).hasClass('active_lvl')){ 		 				
+ 			} else { 				
+	 			$('.h1 button').removeClass('active_lvl');
+	 			$(this).addClass('active_lvl');	 				 			
+ 			}	
+
+ 			var bones = $('.coins img').toArray();
+	 		var i = 0;
+	 		$.each(bones,function(index,value){													
+	 			if($(bones[index]).hasClass('grayscale')){	 				
+	 				i++;
+	 			}
+			})	 			
+
+ 			var choosen = $('.range').val();
+	 		console.log('choosen ' + choosen);
+	 		var total = 100;
+			var toPayMultiplicator = (total/choosen);			
+			console.log('multi ' + toPayMultiplicator);
+			var bet_val = $('.active_bet').val();		
+			console.log('bet ' + bet_val);	
+			if($('.hard').hasClass('active_lvl')) {
+				// $('.bet_block h1').html((((bet_val*toPayMultiplicator)/100)*99).toFixed(4) + ' NAS');				
+				var can_win = bet_val * toPayMultiplicator;
+				console.log(can_win);
+				$('.bet_block h1').html((can_win) + ' NAS');
+			} else {
+				// $('.bet_block h1').html((((bet_val*toPayMultiplicator)/100)*101).toFixed(4) + ' NAS');				
+				var can_win = (bet_val * toPayMultiplicator) + (bet_val * toPayMultiplicator)*0.01;
+				$('.bet_block h1').html(can_win + ' NAS');
+			}
+
+	 	})
+
+	 	$('.go').click(function(){
+	 		var bet = $('.bets_block button').toArray();	 		
+	 		$.each(bet,function(index,value){													
+	 			if($(bet[index]).hasClass('active_bet')){
+	 				var value_data = $(bet[index]).attr('data-bet');
+	 				if (value_data == '1'){
+	 					value_for_send = '0.001';
+	 				} else if( value_data == '2'){
+	 					value_for_send = '0.0025';
+	 				} else if (value_data == '3') {
+	 					value_for_send = '0.005';
+	 				} else {
+	 					value_for_send = '0';
+	 				}
+	 			}
+			})
+
+			// var bones = $('.coins img').toArray();
+	 	// 	var dices_for_send = [];
+	 	// 	var hook_dices = [];
+	 	// 	$.each(bones,function(index,value){													
+	 	// 		if($(bones[index]).hasClass('grayscale')){	 				
+	 	// 			dices_for_send.push('false');
+	 	// 		} else {
+	 	// 			dices_for_send.push('true');
+	 	// 		}
+			// })			
+	 		
+
+	 		// hook_dices.push(JSON.stringify(dices_for_send));
+
+	        var to = dappAddress;
+	        var value = value_for_send;
+	        if($('.easy').hasClass('active_lvl')){
+	        	var callFunction = "play"
+	        } else {
+	        	var callFunction = "playNormal"
+	        }	        		        
+	        var arr_arg = [];
+	        var value_bet_send = $('.range').val();
+	        arr_arg.push(value_bet_send);
+	        var callArgs = JSON.stringify(arr_arg);
+	        console.log(callArgs)
+	        nebPay.call(to, value, callFunction, callArgs, {   	            
+	            listener: cbTest
+	        });	       	        
+		});	       
+   
+	    function listnerTransaction() {
+		  $('.transaction').trigger('click');
+		  $('.hash').html('txHash: <p>' + hash_value + '</p>'); 
+
+		  interval = setInterval(function reload() {       
+		      var to = dappAddress;
+		      var value = 0;
+		      var callFunction = 'read';
+		      var callArgs = "";    		      		      
+		      nebPay.simulateCall(to, value, callFunction, callArgs, { 
+		          listener: cbSearch              
+		      }); 
+		      $('#transaction button').trigger('click');   
+		  } , 20000);
+		}
+
+		function cbTest(resp) {
+		  console.log('вот он сука: ' + JSON.stringify(resp));
+		  console.log('вот он сука: ' + JSON.stringify(resp.txhash))
+		  hash_value = resp.txhash;
+		  if (resp.txhash == undefined) {
+		   } else {
+		    listnerTransaction();    
+		  }  
+		}
+	</script>
+    
+</body>
+
+</html>
+
+
